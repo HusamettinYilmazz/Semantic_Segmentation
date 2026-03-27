@@ -1,0 +1,7 @@
+
+experiment:
+  name: "UNet Semantic Segmentation"
+  version: 1.0
+  seed: 31
+
+
