@@ -4,4 +4,22 @@ experiment:
   version: 1.0
   seed: 31
 
+data:
+  dataset_name: "VOC-2012"
+  dataset_path: "assets"
+  train_dataset_path: "VOC2012_train_val"
+  test_dataset_path: "VOC2012_test"
+  output_path: "modeling/outputs"
 
+model:
+  model_name: "UNet Semantic Segmentation"
+  backbone: ""
+  num_classes: 
+  class_labels:
+
+training:
+  optimizer: "AdamW"
+  batch_size: 128
+  num_epochs: 15
+  learning_rate: 1e-3
+  weight_decay: 1
