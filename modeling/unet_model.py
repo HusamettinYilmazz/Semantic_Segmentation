@@ -37,6 +37,16 @@ class UNet(nn.Module):
             nn.Conv2d(in_channels=512, out_channels=512, kernel_size=(3, 3), padding=1),
             nn.ReLU(),
         )
+        
+        self.bottleneck = nn.Sequential(
+            nn.MaxPool2d((2, 2)),
+            nn.Conv2d(in_channels=512, out_channels=1024, kernel_size=(3, 3), padding=1),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=1024, out_channels=1024, kernel_size=(3, 3), padding=1),
+            nn.ReLU(),
+            nn.ConvTranspose2d(in_channels=1024, out_channels=512, kernel_size=(2, 2), stride=2)
+        )
+
 
 """
 What I've did:
