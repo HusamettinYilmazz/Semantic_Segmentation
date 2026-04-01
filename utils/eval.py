@@ -48,6 +48,5 @@ def compute_confusion_matrix(y_preds, y_true, class_names, ignore_index=255, sav
 def compute_iou_per_class(cm):
     return (cm.diag() / (cm.sum(dim=1) + cm.sum(dim=0) - cm.diag() + 1e-10)).cpu().numpy()
 
-
 def compute_per_class_accuracy(cm):
     return (cm.diag() / (cm.sum(dim=1) + 1e-10)).cpu().numpy()
