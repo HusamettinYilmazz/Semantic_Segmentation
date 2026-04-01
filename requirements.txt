@@ -7,3 +7,5 @@ pandas==2.1.4
 PyYAML==6.0.3
 albumentations==1.4.21
 matplotlib==3.10.8
+seaborn==0.13.2
+scikit-learn==1.3.2
