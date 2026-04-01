@@ -6,3 +6,4 @@ numpy==1.26.4
 pandas==2.1.4
 PyYAML==6.0.3
 albumentations==1.4.21
+matplotlib==3.10.8
