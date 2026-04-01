@@ -38,7 +38,35 @@ def train_an_epoch(epoch, data_loader, device, model, optimizer, loss_func, scal
     return avg_loss
 
 def validate_model(epoch, data_loader, device, model, loss_func, class_names, logger, save_dir=None):
-    ...
+    total_loss = 0.0
+    y_true, y_pred = [], []
+
+    model.eval()
+    with torch.no_grad():
+        for batch_idx, (imgs, masks) in enumerate(data_loader):
+            imgs, masks = imgs.to(device), masks.to(device).long()
+
+            outputs = model(imgs)
+            loss = loss_func(outputs, masks)
+            total_loss += loss.item()
+
+            preds = outputs.argmax(dim=1)
+
+            y_pred.append(preds)
+            y_true.append(masks)
+    
+    cm = compute_confusion_matrix(preds, masks, class_names, ignore_index=255, save_path=save_dir)
+    iou_per_class = compute_iou_per_class(cm)
+    acc_per_class = compute_per_class_accuracy(cm)
+
+    metrics = {
+        "avg_loss" : total_loss / len(data_loader),
+        "iou_per_class" : iou_per_class,
+        "acc_per_class" : acc_per_class,
+    }
+
+    logger.info(metrics)
+    return metrics
 
 def train(config, checkpoint_path=None):
 
