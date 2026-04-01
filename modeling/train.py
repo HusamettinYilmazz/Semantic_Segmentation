@@ -17,7 +17,25 @@ from utils.eval import compute_confusion_matrix, compute_iou_per_class, compute_
 ROOT = ""
 
 def train_an_epoch(epoch, data_loader, device, model, optimizer, loss_func, scaler, logger):
-    ...
+    total_loss = 0.0
+    model.train()
+    for batch_idx, (imgs, masks) in enumerate(data_loader):
+        imgs, masks = imgs.to(device), masks.to(device)
+        optimizer.zero_grad()
+        outputs = model(imgs)
+
+        loss = loss_func(masks, outputs)
+
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+
+        if batch_idx % 10 == 0:
+            logger.info(f"TRAIN: Epoch:{epoch} at Batch:{batch_idx}/{len(data_loader)} Loss:{loss.item():.3f}")
+    
+    avg_loss = total_loss/ len(data_loader)
+    logger.info(f"Epoch:{epoch} average train Loss:{avg_loss:.3f}")
+    return avg_loss
 
 def validate_model(epoch, data_loader, device, model, loss_func, class_names, logger, save_dir=None):
     ...
