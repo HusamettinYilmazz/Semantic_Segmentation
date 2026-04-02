@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
-from .unet_model import UNet
+from modeling.unet import UNet
 from .train import validate_model
 
 from utils.dataset import VOCDataset
