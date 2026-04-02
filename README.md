@@ -19,3 +19,4 @@ Read the foundational and milestone papers, implement their architectures, and d
 | Paper | Year | Key Contribution | Resources | Status |
 |---|---|---|---|---|
 | U-Net | 2015 | Skip connections + encoder-decoder | [link](modeling/unet/) | <span style="color:green">DONE</span> |
+| DeepLabV3 | 2017 | Atrous | - | - | 
