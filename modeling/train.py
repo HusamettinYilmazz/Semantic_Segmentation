@@ -58,7 +58,7 @@ def validate_model(epoch, data_loader, device, model, loss_func, class_names, lo
             cm = compute_confusion_matrix(preds, masks, class_names, ignore_index=255)
 
             total_cm = cm if not total_cm else total_cm + cm
-            
+
     plot_confusion_matrix(total_cm, class_names, save_path=save_dir)
     iou_per_class = compute_iou_per_class(total_cm)
     acc_per_class = compute_per_class_accuracy(total_cm)
@@ -125,7 +125,7 @@ def train(config, checkpoint_path=None):
     optimizer = AdamW(params= model.parameters(), lr=float(config.training['learning_rate']), weight_decay=float(config.training['weight_decay']))
     scheduler = lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, mode='min', factor=0.1, patience=2)
 
-    loss_func = nn.CrossEntropyLoss()
+    loss_func = nn.CrossEntropyLoss(ignore_index=255)
     scaler = GradScaler()
 
     if checkpoint_path:
