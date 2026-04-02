@@ -1,6 +1,9 @@
 import os 
 import sys
 
+import numpy as np
+
+from PIL import Image
 import cv2
 
 from torch.utils.data import Dataset
@@ -21,6 +24,7 @@ class VOCDataset(Dataset):
 
         with open(file_path, 'r') as f:
             data = [line.strip() for line in f.readlines()]
+            data = data[:100] ## to fit in my gpu
         
         return data
 
@@ -33,7 +37,20 @@ class VOCDataset(Dataset):
         img_path = os.path.join(self.data_path, "JPEGImages", f"{img_num}.jpg")
         mask_path = os.path.join(self.data_path, "SegmentationClass", f"{img_num}.png")
         
-        image = cv2.imread(img_path)
-        mask = cv2.imread(mask_path)
+        # image = cv2.imread(img_path)
+        # mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+
+        image = np.array(Image.open(img_path).convert("RGB"))
+        mask = np.array(Image.open(mask_path)) 
+
+        if self.transform:
+            transformed = self.transform(image=image, mask=mask)
+            image = transformed["image"]
+            mask  = transformed["mask"]
 
         return image, mask
+    
+"""
+REMOVE line 27 (inserted beacuse of the lack of a GPU.)
+
+"""
