@@ -1,27 +1,12 @@
-from sklearn.metrics import f1_score, confusion_matrix, classification_report
+from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 import torch
 
 
-def compute_confusion_matrix(y_preds, y_true, class_names, ignore_index=255, save_path=None):
-    """
-    y_preds: [B, H, W] long
-    y_true:  [B, H, W] long
-    """
-    num_classes = len(class_names)
-
-    y_preds = y_preds.cpu().numpy().flatten()
-    y_true  = y_true.cpu().numpy().flatten()
-
-    valid   = (y_true != ignore_index) & (y_true >= 0) & (y_true < num_classes)
-    y_preds = y_preds[valid]
-    y_true  = y_true[valid]
-
-    cm = confusion_matrix(y_true, y_preds, labels=list(range(num_classes)))
-    cm_normalized = cm.astype(float) / (cm.sum(axis=1, keepdims=True) + 1e-10)
-
+def plot_confusion_matrix(cm, class_names, save_path=None):
+    cm_normalized = cm.numpy().astype(float) / (cm.numpy().sum(axis=1, keepdims=True) + 1e-10)
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.heatmap(
         cm_normalized * 100,
@@ -42,6 +27,22 @@ def compute_confusion_matrix(y_preds, y_true, class_names, ignore_index=255, sav
         fig.savefig(save_path, bbox_inches='tight', dpi=300)
         print(f"Confusion matrix saved to {save_path}")
     plt.close(fig)
+
+def compute_confusion_matrix(y_preds, y_true, class_names, ignore_index=255):
+    """
+    y_preds: [B, H, W] long
+    y_true:  [B, H, W] long
+    """
+    num_classes = len(class_names)
+
+    y_preds = y_preds.cpu().numpy().flatten()
+    y_true  = y_true.cpu().numpy().flatten()
+
+    valid   = (y_true != ignore_index) & (y_true >= 0) & (y_true < num_classes)
+    y_preds = y_preds[valid]
+    y_true  = y_true[valid]
+
+    cm = confusion_matrix(y_true, y_preds, labels=list(range(num_classes)))
 
     return torch.tensor(cm, dtype=torch.long)
 
