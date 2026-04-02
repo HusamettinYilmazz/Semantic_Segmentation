@@ -15,7 +15,8 @@ from albumentations.pytorch import ToTensorV2
 from modeling.unet import UNet
 from utils.dataset import VOCDataset
 from utils import lr_vs_epoch, save_checkpoint, Logger
-from utils.eval import compute_confusion_matrix, compute_iou_per_class, compute_per_class_accuracy
+from utils.eval import compute_confusion_matrix, compute_iou_per_class
+from utils.eval import compute_per_class_accuracy, plot_confusion_matrix
 from utils import load_config
 
 def train_an_epoch(epoch, data_loader, device, model, optimizer, loss_func, scaler, logger):
@@ -54,10 +55,11 @@ def validate_model(epoch, data_loader, device, model, loss_func, class_names, lo
 
             preds = outputs.argmax(dim=1)
 
-            cm = compute_confusion_matrix(preds, masks, class_names, ignore_index=255, save_path=None)
+            cm = compute_confusion_matrix(preds, masks, class_names, ignore_index=255)
 
             total_cm = cm if not total_cm else total_cm + cm
             
+    plot_confusion_matrix(total_cm, class_names, save_path=save_dir)
     iou_per_class = compute_iou_per_class(total_cm)
     acc_per_class = compute_per_class_accuracy(total_cm)
 
