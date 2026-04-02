@@ -1,4 +1,7 @@
 import os
+import sys
+ROOT = os.getcwd()
+sys.path.append(ROOT)
 
 import torch
 import torch.nn as nn
@@ -13,18 +16,17 @@ from unet_model import UNet
 from utils.dataset import VOCDataset
 from utils import lr_vs_epoch, save_checkpoint, Logger
 from utils.eval import compute_confusion_matrix, compute_iou_per_class, compute_per_class_accuracy
-
-ROOT = ""
+from utils import load_config
 
 def train_an_epoch(epoch, data_loader, device, model, optimizer, loss_func, scaler, logger):
     total_loss = 0.0
     model.train()
     for batch_idx, (imgs, masks) in enumerate(data_loader):
-        imgs, masks = imgs.to(device), masks.to(device)
+        imgs, masks = imgs.to(device), masks.to(device).long()
         optimizer.zero_grad()
         outputs = model(imgs)
 
-        loss = loss_func(masks, outputs)
+        loss = loss_func(outputs, masks)
 
         loss.backward()
         optimizer.step()
@@ -76,7 +78,7 @@ def train(config, checkpoint_path=None):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     train_transform = A.Compose([
-        A.Resize(224, 224),
+        A.Resize(512, 512),
         A.OneOf([
             A.GaussianBlur(blur_limit=(3, 7)),
             A.ColorJitter(brightness=0.2),
@@ -95,7 +97,7 @@ def train(config, checkpoint_path=None):
     ])
     
     val_transform = A.Compose([
-        A.Resize(224, 224),
+        A.Resize(512, 512),
         A.Normalize(
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225]
@@ -112,10 +114,10 @@ def train(config, checkpoint_path=None):
                                data_type="val",
                                transform=val_transform)
     
-    train_loader = DataLoader(dataset=train_dataset, batch_size=config.training['batch_size'], shuffle= True, num_workers=4, pin_memory= True)
-    val_loader = DataLoader(dataset=val_dataset, batch_size=config.training['batch_size'], shuffle= True, num_workers=4, pin_memory= True)
+    train_loader = DataLoader(dataset=train_dataset, batch_size=config.training['batch_size'], shuffle= True, pin_memory= True)
+    val_loader = DataLoader(dataset=val_dataset, batch_size=config.training['batch_size'], shuffle= True, pin_memory= True)
 
-    model = UNet(out_features=config.model['num_classes'])
+    model = UNet(out_classes=config.model['num_classes'])
     model = model.to(device)
 
     optimizer = AdamW(params= model.parameters(), lr=float(config.training['learning_rate']), weight_decay=float(config.training['weight_decay']))
@@ -179,4 +181,16 @@ Pritiorize Doing (NO NEED TO UNDERSTAND THE HALL TORCH LIBRARY AND ITS ALL INTER
 6- Loss function
 7- Training loop
 
+"""
+
+
+if __name__ == "__main__":
+    config = load_config(os.path.join(ROOT, "config/unet_config.yml"))
+    train(config)
+
+"""
+
+what to do next:
+    1. go to cloud because Cuda is out of memory :)
+    
 """
