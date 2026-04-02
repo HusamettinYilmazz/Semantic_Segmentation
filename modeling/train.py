@@ -77,7 +77,6 @@ def train(config, checkpoint_path=None):
 
     dataset_path = os.path.join(ROOT, config.data['dataset_path'])
     
-    
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     train_transform = A.Compose([
@@ -124,7 +123,7 @@ def train(config, checkpoint_path=None):
     model = model.to(device)
 
     optimizer = AdamW(params= model.parameters(), lr=float(config.training['learning_rate']), weight_decay=float(config.training['weight_decay']))
-    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, mode='min', factor=0.1, patience=2, verbose=True)
+    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, mode='min', factor=0.1, patience=2)
 
     loss_func = nn.CrossEntropyLoss()
     scaler = GradScaler()
