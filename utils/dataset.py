@@ -24,7 +24,6 @@ class VOCDataset(Dataset):
 
         with open(file_path, 'r') as f:
             data = [line.strip() for line in f.readlines()]
-            data = data[:100] ## to fit in my gpu
         
         return data
 
@@ -49,8 +48,3 @@ class VOCDataset(Dataset):
             mask  = transformed["mask"]
 
         return image, mask
-    
-"""
-REMOVE line 27 (inserted beacuse of the lack of a GPU.)
-
-"""
