@@ -15,3 +15,7 @@ Read the foundational and milestone papers, implement their architectures, and d
 - Production-ready code
 - Hyperparameter tuning
 
+## Papers & Architectures
+| Paper | Year | Key Contribution | Resources | Status |
+|---|---|---|---|---|
+| U-Net | 2015 | Skip connections + encoder-decoder | [link](modeling/unet/) | <span style="color:green">DONE</span> |
