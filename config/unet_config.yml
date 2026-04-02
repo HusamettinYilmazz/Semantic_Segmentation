@@ -1,6 +1,6 @@
 
 experiment:
-  name: "unet_semantic_segmantation"
+  name: "unet_semantic_segmentation"
   version: "1.0"
   seed: 31
 
@@ -40,7 +40,7 @@ model:
 
 training:
   optimizer: "AdamW"
-  batch_size: 1
+  batch_size: 4
   num_epochs: 2
   learning_rate: 1e-3
   weight_decay: 1
