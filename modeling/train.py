@@ -12,7 +12,7 @@ from torch.cuda.amp import autocast, GradScaler
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
-from unet_model import UNet
+from modeling.unet import UNet
 from utils.dataset import VOCDataset
 from utils import lr_vs_epoch, save_checkpoint, Logger
 from utils.eval import compute_confusion_matrix, compute_iou_per_class, compute_per_class_accuracy
@@ -41,7 +41,7 @@ def train_an_epoch(epoch, data_loader, device, model, optimizer, loss_func, scal
 
 def validate_model(epoch, data_loader, device, model, loss_func, class_names, logger, save_dir=None):
     total_loss = 0.0
-    y_true, y_pred = [], []
+    total_cm = None
 
     model.eval()
     with torch.no_grad():
@@ -54,12 +54,12 @@ def validate_model(epoch, data_loader, device, model, loss_func, class_names, lo
 
             preds = outputs.argmax(dim=1)
 
-            y_pred.append(preds)
-            y_true.append(masks)
-    
-    cm = compute_confusion_matrix(preds, masks, class_names, ignore_index=255, save_path=save_dir)
-    iou_per_class = compute_iou_per_class(cm)
-    acc_per_class = compute_per_class_accuracy(cm)
+            cm = compute_confusion_matrix(preds, masks, class_names, ignore_index=255, save_path=None)
+
+            total_cm = cm if not total_cm else total_cm + cm
+            
+    iou_per_class = compute_iou_per_class(total_cm)
+    acc_per_class = compute_per_class_accuracy(total_cm)
 
     metrics = {
         "avg_loss" : total_loss / len(data_loader),
@@ -67,6 +67,7 @@ def validate_model(epoch, data_loader, device, model, loss_func, class_names, lo
         "acc_per_class" : acc_per_class,
     }
 
+    logger.info(f"Epoch:{epoch} validation metrics")
     logger.info(metrics)
     return metrics
 
