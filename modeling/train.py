@@ -57,7 +57,7 @@ def validate_model(epoch, data_loader, device, model, loss_func, class_names, lo
 
             cm = compute_confusion_matrix(preds, masks, class_names, ignore_index=255)
 
-            total_cm = cm if not total_cm else total_cm + cm
+            total_cm = cm if total_cm is None else total_cm + cm
 
     plot_confusion_matrix(total_cm, class_names, save_path=save_dir)
     iou_per_class = compute_iou_per_class(total_cm)
