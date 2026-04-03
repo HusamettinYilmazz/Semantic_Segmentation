@@ -55,7 +55,7 @@ def validate_model(epoch, data_loader, device, model, loss_func, class_names, lo
 
             preds = outputs.argmax(dim=1)
 
-            cm = compute_confusion_matrix(preds, masks, class_names, ignore_index=255)
+            cm = compute_confusion_matrix(masks, preds, class_names, ignore_index=255)
 
             total_cm = cm if total_cm is None else total_cm + cm
 
