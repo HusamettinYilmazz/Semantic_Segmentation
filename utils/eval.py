@@ -28,7 +28,7 @@ def plot_confusion_matrix(cm, class_names, save_path=None):
         print(f"Confusion matrix saved to {save_path}")
     plt.close(fig)
 
-def compute_confusion_matrix(y_preds, y_true, class_names, ignore_index=255):
+def compute_confusion_matrix(y_true, y_preds, class_names, ignore_index=255):
     """
     y_preds: [B, H, W] long
     y_true:  [B, H, W] long
