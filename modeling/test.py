@@ -58,4 +58,4 @@ if __name__ == "__main__":
     loss_func = nn.CrossEntropyLoss(ignore_index=255)
     
     test_metrics = test_model(config, model_path, loss_func, test_transform)
-    print(f"Test Loss {test_metrics['avg_loss']:.4f} | IOU per class {test_metrics['iou_per_class']:.2f}% | Accuarcy per class {test_metrics['acc_per_class']:.4}")
+    print(f"Test Loss {test_metrics['avg_loss']:.4f} | IOU {test_metrics['iou_per_class'].mean() * 100:.2f}% | Accuarcy {test_metrics['acc_per_class'].mean() * 100:.2f}%")
