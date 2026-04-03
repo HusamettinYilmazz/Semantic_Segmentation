@@ -7,7 +7,7 @@ import torch
 
 def plot_confusion_matrix(cm, class_names, save_path=None):
     cm_normalized = cm.numpy().astype(float) / (cm.numpy().sum(axis=1, keepdims=True) + 1e-10)
-    fig, ax = plt.subplots(figsize=(10, 8))
+    fig, ax = plt.subplots(figsize=(16, 14))
     sns.heatmap(
         cm_normalized * 100,
         annot=True,
