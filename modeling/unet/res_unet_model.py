@@ -4,8 +4,6 @@ from torchvision import models
 
 import torchvision
 
-from PIL import Image
-import numpy as np
 
 class ResUNet(nn.Module):
     def __init__(self, out_classes):
