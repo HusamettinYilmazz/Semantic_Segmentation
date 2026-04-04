@@ -4,6 +4,8 @@ from torchvision import models
 
 import torchvision
 
+from PIL import Image
+import numpy as np
 
 class ResUNet(nn.Module):
     def __init__(self, out_classes):
@@ -118,8 +120,8 @@ class ResUNet(nn.Module):
         enc0_x = self.enc_block0(x)
         enc1_x = self.enc_block1(enc0_x)
         enc2_x = self.enc_block2(enc1_x)
-        enc3_x = self.enc_block3(enc2_x)
-        enc4_x = self.enc_block4(enc3_x)
+        enc3_x = self.enc_block3(enc2_x)    ## [1, 1024, 18, 32] I believe its ok but bigger is better
+        enc4_x = self.enc_block4(enc3_x)    ## [1, 2048, 9, 16] width and height are too small
         
         bottleneck_x = self.bottleneck(enc4_x)
         
@@ -131,3 +133,12 @@ class ResUNet(nn.Module):
         # print(dec1_x.shape)
 
         return dec0_x
+
+
+
+"""
+TODO later:
+    - The image resoluation at botteleneck block is too small 
+    I may remove self.enc_block4 and self.dec_block4 and fix self.botteleneck
+    input and output to match self.enc_block3 and self.dec_block3
+"""
