@@ -4,8 +4,6 @@ from torchvision import models
 
 import torchvision
 
-from PIL import Image
-import numpy as np
 
 class ResUNet(nn.Module):
     def __init__(self, out_classes):
@@ -13,8 +11,7 @@ class ResUNet(nn.Module):
         self.resnet50 = models.resnet50(weights="DEFAULT")
         self.resnet50 = nn.Sequential(*list(self.resnet50.children())[:-2])
 
-        self.first = nn.Sequential(*list(self.resnet50.children())[:4])
-
+        self.enc_block0 = nn.Sequential(*list(self.resnet50.children())[:4])
         self.enc_block1 = nn.Sequential(*list(self.resnet50.children())[4:5])
         self.enc_block2 = nn.Sequential(*list(self.resnet50.children())[5:6])
         self.enc_block3 = nn.Sequential(*list(self.resnet50.children())[6:7])
@@ -85,10 +82,31 @@ class ResUNet(nn.Module):
                       out_channels=self.dec_block2[-1].out_channels, 
                       kernel_size=(3, 3), padding=1),
             nn.ReLU(),
-
-            nn.Conv2d(in_channels=self.dec_block2[-1].out_channels, 
-                      out_channels=out_classes, 
-                      kernel_size=(1, 1)),
+            nn.ConvTranspose2d(in_channels=self.dec_block2[-1].out_channels, 
+                               out_channels=self.dec_block2[-1].out_channels//2, 
+                               kernel_size=(2, 2), stride=2),
+        
+        )
+        self.dec_block0 = nn.Sequential(
+            nn.Conv2d(in_channels=self.enc_block0[0].out_channels + self.dec_block1[-1].out_channels, 
+                    out_channels=self.dec_block1[-1].out_channels, 
+                    kernel_size=(3, 3), padding=1),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=self.dec_block1[-1].out_channels, 
+                    out_channels=self.dec_block1[-1].out_channels, 
+                    kernel_size=(3, 3), padding=1),
+            nn.ReLU(),
+            nn.ConvTranspose2d(in_channels=self.dec_block1[-1].out_channels,
+                            out_channels=self.dec_block1[-1].out_channels//2,
+                            kernel_size=(2, 2), stride=2),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=self.dec_block1[-1].out_channels//2, 
+                    out_channels=self.dec_block1[-1].out_channels//2, 
+                    kernel_size=(3, 3), padding=1),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=self.dec_block1[-1].out_channels//2, 
+                    out_channels=out_classes, 
+                    kernel_size=(1, 1)),
         )
 
         # for child in list(self.resnet50.children())[:]:
@@ -96,8 +114,9 @@ class ResUNet(nn.Module):
 
     def forward(self, x):
         # print(x.shape)
-        
-        enc1_x = self.enc_block1(self.first(x))
+
+        enc0_x = self.enc_block0(x)
+        enc1_x = self.enc_block1(enc0_x)
         enc2_x = self.enc_block2(enc1_x)
         enc3_x = self.enc_block3(enc2_x)
         enc4_x = self.enc_block4(enc3_x)
@@ -108,7 +127,7 @@ class ResUNet(nn.Module):
         dec3_x = self.dec_block3(torch.cat((dec4_x, torchvision.transforms.functional.center_crop(enc3_x, dec4_x.shape[2:])), dim=1))
         dec2_x = self.dec_block2(torch.cat((dec3_x, torchvision.transforms.functional.center_crop(enc2_x, dec3_x.shape[2:])), dim=1))
         dec1_x = self.dec_block1(torch.cat((dec2_x, torchvision.transforms.functional.center_crop(enc1_x, dec2_x.shape[2:])), dim=1))
-
+        dec0_x = self.dec_block0(torch.cat((dec1_x, torchvision.transforms.functional.center_crop(enc0_x, dec1_x.shape[2:])), dim=1))
         # print(dec1_x.shape)
 
-        return dec1_x
+        return dec0_x
