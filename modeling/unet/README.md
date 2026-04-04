@@ -56,3 +56,10 @@ you can find implementation in ``res_unet_model.py``.
 | dec_block2 | Custom | 512 → 256 | 128 |
 | dec_block1 | Custom | 256 → 128 | 256 |
 | dec_block0 | Custom | 128 → 21 | 512 |
+
+# Appendix
+## Training process 
+the training is done using P100 free gpu from kaggle on PASCAL-VOC 2012 dataset
+> Note: the training is done for model and pipeline working verification not for chasing high scores
+
+kaggle notebook: https://www.kaggle.com/code/husammm/semantic-segmantation
