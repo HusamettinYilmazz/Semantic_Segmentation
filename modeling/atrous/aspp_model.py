@@ -22,6 +22,19 @@ class ASPP(nn.Module):
                           nn.ReLU()
             )
             self.scales.append(network)
-       
+        self.avg_pool = nn.Sequential(
+            nn.AdaptiveAvgPool2d(output_size=1), 
+            nn.Conv2d(in_channels=2048, out_channels=512, kernel_size=1)
+        )
+        
+        self.enc_proj = nn.Sequential(
+            nn.Conv2d(in_channels=(len(rates)+1)*512, out_channels=1024, kernel_size=1,),
+            nn.ConvTranspose2d(in_channels=1024, out_channels=512, 
+                               kernel_size=(2, 2), stride=8),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=(3, 3), padding=4),
+            nn.BatchNorm2d(num_features=512),
+            nn.ReLU(),
+        )
+
         # for child in self.entry:
         #     print(child)
