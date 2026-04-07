@@ -36,5 +36,21 @@ class ASPP(nn.Module):
             nn.ReLU(),
         )
 
+        self.decoder = nn.Sequential(
+            nn.Conv2d(in_channels=256+512, out_channels=256,
+                      kernel_size=1), 
+            nn.BatchNorm2d(num_features=256),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=256, out_channels=128,
+                      kernel_size=1), 
+            nn.BatchNorm2d(num_features=128),
+            nn.ReLU(),
+
+            ## Upsample
+            nn.ConvTranspose2d(in_channels=128, out_channels=64,
+                               kernel_size=(2, 2), stride=4),
+            nn.Conv2d(in_channels=64, out_channels=out_classes, kernel_size=(3, 3), padding=1),
+        )
+        
         # for child in self.entry:
         #     print(child)
