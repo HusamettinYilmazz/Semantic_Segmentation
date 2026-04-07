@@ -54,3 +54,21 @@ class ASPP(nn.Module):
         
         # for child in self.entry:
         #     print(child)
+
+    def forward(self, x):
+        # print(x.shape)    ## X: [1, 3, 281, 500]
+        skip_out = self.entry(x)    ## skip_out: [1, 256, 71, 125]
+        res_out = self.resnet(skip_out) ##
+
+        encoder_out = self.avg_pool(res_out)    ##[1, 2048, 1, 1]
+        encoder_out = torch.nn.functional.interpolate(encoder_out, 
+                        size=res_out.shape[2:], mode='bilinear', align_corners=False)
+        
+        for scale in self.scales:
+            atrous_out = scale(res_out)
+            encoder_out = torch.cat([encoder_out, atrous_out], dim=1)
+
+        encoder_out = self.enc_proj(encoder_out)
+        out = self.decoder(torch.cat([skip_out, encoder_out], dim=1))
+
+        return out
