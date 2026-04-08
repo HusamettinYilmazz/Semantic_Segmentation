@@ -12,3 +12,24 @@
 
 > DeepLab V3+: [Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation — Chen et al., 2018](https://arxiv.org/pdf/1802.02611)
 
+
+
+# DeepLab-V3+ Architecture
+
+<img src="assets/readme_images/Architecture-of-DeepLabV3-with-backbone-network.png" alt="DeepLabV3+ architecture" width="95%" />
+
+
+# Each Paper Key Contribution
+
+1. **DeepLabV1:**
+    The paper introduced atrous( dilated) convolution which let the kernel see wider view of the picture
+
+2. **DeepLabV2:**
+    - The paper introduced **Atrous Spatial Pyramid Pooling (ASPP)**: multiscale atrous (different rates at the same layer). Capturing different scales helps network converge earlier and capture high level features which is normally seen in deeper layers
+    - The network has the ability to see high level features without any loss in features as happens in deeper layers
+
+3. **DeepLabV3:**
+    Simplified the architecture by removing CRFs and focusing on ASPP with batch normalization.
+
+4. **DeepLabV3+:**
+    The paper moved everything introduced before to the encoder-decoder style with skip connections
