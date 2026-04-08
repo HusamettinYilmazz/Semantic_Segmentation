@@ -33,3 +33,14 @@
 
 4. **DeepLabV3+:**
     The paper moved everything introduced before to the encoder-decoder style with skip connections
+
+## Learning lesson
+> Note: Reading this series of papers shows how really is reaserch done **Step by Step progress** -- in first paper they focused on the main idea and used CRF to refine object boundaries in third one they removed the CRF and let the network handle it internally, Instead of doing everything once iterate over components and find where can you do a small improvement
+
+
+# Appendix
+## Training process 
+the training is done using P100 free gpu from kaggle on PASCAL-VOC 2012 dataset
+> Note: the training is done for model and pipeline working verification not for chasing high scores
+
+kaggle notebook: 
