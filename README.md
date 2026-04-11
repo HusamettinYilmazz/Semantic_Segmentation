@@ -21,5 +21,5 @@ Read the foundational and milestone papers, implement their architectures, and d
 | U-Net | 2015 | Skip connections + encoder-decoder | [modeling/unet/](modeling/unet/) | <span style="color:green">DONE</span> |
 | DeepLabV3 | 2017 | Atrous + multi-rate atrous| [modeling/atrous/](modeling/atrous/) | <span style="color:green">DONE</span> | 
 | SETR | 2020 | - | - | - | 
-| SegFormer | 2020 | - | - | - |
-| SAM | 2020 | - | - | - |
+| SegFormer | - | - | - | - |
+| SAM | - | - | - | - |
