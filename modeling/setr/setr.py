@@ -81,3 +81,52 @@ class ViTEncoder(nn.Module):
 
         return features
 
+class MLAHead(nn.Module):
+    def __init__(self, embed_dim=768, out_channels=256, num_classes=21):
+        super().__init__()
+
+        # project each level
+        self.proj = nn.ModuleList([
+            nn.Conv2d(embed_dim, out_channels, 1)
+            for _ in range(4)
+        ])
+
+        self.fuse = nn.Sequential(
+            nn.Conv2d(out_channels * 4, 512, 3, padding=1),
+            nn.BatchNorm2d(512),
+            nn.ReLU(inplace=True),
+
+            nn.Conv2d(512, 256, 3, padding=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(inplace=True),
+        )
+
+        self.classifier = nn.Conv2d(256, num_classes, 1)
+
+    def forward(self, features, hw):
+        # features: list of (B, HW, C)
+        H, W = hw
+        outs = []
+
+        for i, feat in enumerate(features):
+            B, N, C = feat.shape
+
+            # reshape to 2D
+            feat = feat.transpose(1, 2).reshape(B, C, H, W)
+
+            feat = self.proj[i](feat)
+
+            # upsample to largest scale
+            feat = F.interpolate(feat,
+                                 size=(H, W),
+                                 mode='bilinear',
+                                 align_corners=False)
+
+            outs.append(feat)
+
+        x = torch.cat(outs, dim=1)
+        x = self.fuse(x)
+        x = self.classifier(x)
+
+        return x
+
