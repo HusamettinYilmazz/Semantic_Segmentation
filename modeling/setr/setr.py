@@ -2,6 +2,36 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+class SETR_MLA(nn.Module):
+    def __init__(self,
+                 img_size=224,
+                 patch_size=16,
+                 num_classes=21,
+                 embed_dim=768):
+
+        super().__init__()
+        self.img_size = img_size
+
+        self.patch_embed = PatchEmbedding(img_size, patch_size, 3, embed_dim)
+        self.pos_encoding = PositionalEncoding(max_len= (img_size // patch_size)**2, d_model=embed_dim)
+        self.encoder = ViTEncoder(depth=24, dim=embed_dim)
+        self.decoder = MLAHead(embed_dim, 256, num_classes)
+
+    def forward(self, x):
+        x, hw = self.patch_embed(x)   # (B, HW, C)
+        x = self.pos_encoding(x)
+        features = self.encoder(x)
+
+        out = self.decoder(features, hw)
+
+        # upsample to original image size
+        out = F.interpolate(out,
+                            size=(self.img_size, self.img_size),
+                            mode='bilinear',
+                            align_corners=False)
+
+        return out
+
 
 class PositionalEncoding(nn.Module):
     def __init__(self, max_len, d_model):
@@ -129,4 +159,3 @@ class MLAHead(nn.Module):
         x = self.classifier(x)
 
         return x
-
