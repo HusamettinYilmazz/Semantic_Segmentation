@@ -20,3 +20,15 @@ the first paper used transformer on images was Vit (Vision Transformer), SETR bo
 2. Project each crop to 1D array to match classical Transformer input shape.
 3. Build the sequence with crops (each crop as word)
 4. Feed the full sequence of tokens to standa
+
+## Decoder
+the paper introduced 3 types of decoders
+### 1. Naive decoder
+  a simple 2 layers network then output is upsampled to the full image resolution followed by a classification layer with pixel wise cross entropy loss
+### 2. Progressive Upsampling (PUP) decoder
+<div align="center">
+<img src="assets/readme_images/setr_pup.png" alt="SETR architecture" width="50%"/>
+</div>
+
+  PUP applies multi layer netword each one is responsable to upscale the output with 2X. this give the model a chance to refine features at each scale which prevent introduced noisy predictions.
+  
