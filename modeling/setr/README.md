@@ -32,3 +32,14 @@ the paper introduced 3 types of decoders
 
   PUP applies multi layer netword each one is responsable to upscale the output with 2X. this give the model a chance to refine features at each scale which prevent introduced noisy predictions.
   
+### 3. Multi-Level Aggregation (MLA) decoder 
+<div align="center">
+<img src="assets/readme_images/setr_mla.png" alt="SETR architecture" width="50%"/>
+</div>
+
+  Similar to feature pyramid network, MLA takes the output of some intermadiate layers of encoder and independently projected and upsampled to 1/4 of original image resolution then all of them are concatenated and fused. 
+
+
+## Notes: 
+> 1. even with image as a 2D array instead of fixing the transformer so it can deal with 2D array, they projected image to 1D array 
+> 2. Transformer was used as a blackbox
