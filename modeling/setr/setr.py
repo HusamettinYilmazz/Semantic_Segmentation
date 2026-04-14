@@ -39,3 +39,45 @@ class PatchEmbedding(nn.Module):
         H, W = x.shape[2], x.shape[3]
         x = x.flatten(2).transpose(1, 2)     ## (B, HW, E)
         return x, (H, W)
+
+class TransformerLayer(nn.Module):
+    def __init__(self, dim, heads=12, mlp_ratio=4.0):
+        super().__init__()
+        self.norm1 = nn.LayerNorm(dim)
+        self.attn = nn.MultiheadAttention(dim, heads, batch_first=True)
+        self.norm2 = nn.LayerNorm(dim)
+
+        self.mlp = nn.Sequential(
+            nn.Linear(dim, int(dim * mlp_ratio)),
+            nn.GELU(),
+            nn.Linear(int(dim * mlp_ratio), dim)
+        )
+
+    def forward(self, x):
+        # Self-attention
+        x = x + self.attn(self.norm1(x),
+                          self.norm1(x),
+                          self.norm1(x))[0]
+        # MLP
+        x = x + self.mlp(self.norm2(x))
+        return x
+
+class ViTEncoder(nn.Module):
+    def __init__(self, depth=24, dim=768):
+        super().__init__()
+        self.blocks = nn.ModuleList([
+            TransformerLayer(dim) for _ in range(depth)
+        ])
+
+    def forward(self, x):
+        features = []
+
+        for i, blk in enumerate(self.blocks):
+            x = blk(x)
+
+            # pick layers for MLA (example: 6, 12, 18, 24)
+            if i in [5, 11, 17, 23]:
+                features.append(x)
+
+        return features
+
