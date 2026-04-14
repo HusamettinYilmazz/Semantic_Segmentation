@@ -25,3 +25,17 @@ class PositionalEncoding(nn.Module):
         x += self.pe[:, :x.size(1)]
         return x
 
+class PatchEmbedding(nn.Module):
+    def __init__(self, img_size=224, patch_size=16, in_ch=3, embed_dim=768):
+        super().__init__()
+        self.patch_size = patch_size
+        self.proj = nn.Conv2d(in_ch, embed_dim,
+                              kernel_size=patch_size,
+                              stride=patch_size)
+
+    def forward(self, x):
+        ## x: (B, C, H, W)
+        x = self.proj(x)                     ## (B, E, H/P, W/P)
+        H, W = x.shape[2], x.shape[3]
+        x = x.flatten(2).transpose(1, 2)     ## (B, HW, E)
+        return x, (H, W)
