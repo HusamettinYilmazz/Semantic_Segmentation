@@ -10,3 +10,13 @@
 After transformer seen as a game changer in the field many researchers attemped to borrow it from NLP area to different doamins like computer vision, this paper is one of them. the computer vision area and semantic segmentation problem was dominated with fully convoulational networks (FCN), the first attemps worked on replacing CNNs with transformer.
 it is striking how first attemps used Transformer architecture as a black box (it will be illustared more later)
 
+
+# Architecture
+The classical encoder-decoder structure continued but replaced the CVV encoder with a pure transformer
+## Encoder (ViT)
+the first paper used transformer on images was Vit (Vision Transformer), SETR borrowed the same idea without any modification
+**Encoding Process**
+1. Split the image into 16 crops.
+2. Project each crop to 1D array to match classical Transformer input shape.
+3. Build the sequence with crops (each crop as word)
+4. Feed the full sequence of tokens to standa
