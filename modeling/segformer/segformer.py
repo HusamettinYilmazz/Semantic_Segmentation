@@ -82,3 +82,21 @@ class MixFFN(nn.Module):
         out = self.fc2(x)
 
         return out
+
+class TransformerBlock(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.norm1 = nn.LayerNorm(dim)
+        self.att = SpatialReductionAttention(dim)
+        self.norm2 = nn.LayerNorm(dim)
+        self.mix_fnn = MixFFN(dim)
+
+    def forward(self, x):
+        x_norm = self.norm1(x)
+        x = x + self.att(x_norm)
+
+        x_norm2 = self.norm2(x)
+        out = x + self.mix_fnn(x_norm2)
+
+        return out
+
