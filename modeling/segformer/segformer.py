@@ -20,3 +20,35 @@ class OverlapPatchEmbed(nn.Module):
         x = x.flatten(2).transpose(1, 2)    ## [B, N, C]
         out = self.norm(x)
         return out
+
+class SpatialReductionAttention(nn.Module):
+    def __init__(self, emb_dim, heads=8, sr_ratio=1):
+        super().__init__()
+        self.sr_ratio = sr_ratio
+        self.att = nn.MultiheadAttention(
+            embed_dim=emb_dim,
+            num_heads=heads,
+            batch_first=True,
+        )
+        if sr_ratio > 1:
+            self.sr = nn.Conv2d(emb_dim, emb_dim,
+                                kernel_size=sr_ratio,
+                                stride=sr_ratio)
+            self.norm = nn.LayerNorm(emb_dim)
+
+    def forward(self, x, H, W):
+        B, N, C = x.shape
+
+        q = x
+        if self.sr_ratio > 1:
+            x_ = x.transpose(1, 2).reshape(B, C, H, W)
+            x_ = self.sr(x_)
+            x_ = x_.reshape(B, C, -1).transpose(1, 2)
+            x_ = self.norm(x_)
+        else:
+            x_ = x
+
+        k, v = x_, x_
+        attn_out, _ = self.att(q, k, v)
+
+        return attn_out
