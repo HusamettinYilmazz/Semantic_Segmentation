@@ -52,3 +52,33 @@ class SpatialReductionAttention(nn.Module):
         attn_out, _ = self.att(q, k, v)
 
         return attn_out
+
+class MixFFN(nn.Module):
+    def __init__(self, dim, hidden_dim):
+        super().__init__()
+
+        self.fc1 = nn.Linear(dim, hidden_dim)
+        self.dwconv = nn.Conv2d(
+            hidden_dim,
+            hidden_dim,
+            kernel_size=3,
+            stride=1,
+            padding=1,
+            groups=hidden_dim  # depthwise
+        )
+        self.act = nn.GELU()
+        self.fc2 = nn.Linear(hidden_dim, dim)
+
+    def forward(self, x, H, W):
+        B, N, C = x.shape
+
+        x = self.fc1(x)  # (B, N, hidden_dim)
+
+        x = x.transpose(1, 2).reshape(B, -1, H, W)
+        x = self.dwconv(x)
+
+        x = x.reshape(B, -1, H * W).transpose(1, 2)
+        x = self.act(x)
+        out = self.fc2(x)
+
+        return out
