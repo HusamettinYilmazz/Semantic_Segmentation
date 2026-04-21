@@ -128,3 +128,37 @@ class Encoder(nn.Module):
         f3 = self.stage3(x)
         f4 = self.stage4(x)
         return f1, f2, f3, f4
+
+class Decoder(nn.Module):
+    def __init__(self, num_classes):
+        super().__init__()
+        self.proj = nn.ModuleList([
+            nn.Linear(64, 256),
+            nn.Linear(128, 256),
+            nn.Linear(320, 256),
+            nn.Linear(512, 256),
+        ])
+
+        self.fuse = nn.Sequential(
+            nn.Conv2d(256 * 4, 256, 1),
+            nn.ReLU(),
+            nn.Conv2d(256, num_classes, 1)
+        )
+
+    def forward(self, feats, out_size):
+        outs = []
+        for i, f in enumerate(feats):
+            B, N, C = f.shape
+            h = w = int(N ** 0.5)
+
+            f = self.proj[i](f)
+            f = f.transpose(1, 2).reshape(B, 256, h, w)
+
+            f = F.interpolate(f, size=feats[0].shape[1] ** 0.5, mode="bilinear", align_corners=False)
+            outs.append(f)
+
+        x = torch.cat(outs, dim=1)
+        x = self.fuse(x)
+
+        x = F.interpolate(x, size=out_size, mode="bilinear", align_corners=False)
+        return x
