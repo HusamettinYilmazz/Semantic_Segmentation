@@ -22,4 +22,5 @@ Read the foundational and milestone papers, implement their architectures, and d
 | DeepLab (4 papers) | 2017 | Atrous + multi-rate atrous| [modeling/atrous/](modeling/atrous/) | <span style="color:green">DONE</span> | 
 | SETR | 2021 | Transformer in semantc segmentation | [modeling/setr/](modeling/setr/) | <span style="color:green">DONE</span> | 
 | SegFormer | - | - | - | - |
+| SwinTransformer | - | - | - | - |
 | SAM | - | - | - | - |
