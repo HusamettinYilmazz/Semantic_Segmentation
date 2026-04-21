@@ -162,3 +162,15 @@ class Decoder(nn.Module):
 
         x = F.interpolate(x, size=out_size, mode="bilinear", align_corners=False)
         return x
+
+class SegFormer(nn.Module):
+    def __init__(self, num_classes=21):
+        super().__init__()
+        self.encoder = Encoder()
+        self.decoder = Decoder(num_classes)
+
+    def forward(self, x):
+        size = x.shape[2:]
+        feats = self.encoder(x)
+        out = self.decoder(feats, size)
+        return out
