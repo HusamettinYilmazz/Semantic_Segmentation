@@ -112,3 +112,19 @@ class EncoderStage(nn.Module):
         x = self.blocks(x)
         x = self.norm(x)
         return x
+
+class Encoder(nn.Module):
+    def __init__(self, ):
+        super().__init__()
+
+        self.stage1 = EncoderStage(3, 64, 2, 7, 4)
+        self.stage2 = EncoderStage(64, 128, 2, 3, 2)
+        self.stage3 = EncoderStage(128, 320, 2, 3, 2)
+        self.stage4 = EncoderStage(320, 512, 2, 3, 2)
+
+    def forward(self, x):
+        f1 = self.stage1(x)
+        f2 = self.stage2(x)
+        f3 = self.stage3(x)
+        f4 = self.stage4(x)
+        return f1, f2, f3, f4
