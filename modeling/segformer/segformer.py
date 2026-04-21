@@ -100,3 +100,15 @@ class TransformerBlock(nn.Module):
 
         return out
 
+class EncoderStage(nn.Module):
+    def __init__(self, in_ch, embed_dim, depth, patch_size, stride):
+        super().__init__()
+        self.patch_embed = OverlapPatchEmbed(in_ch, embed_dim, patch_size, stride)
+        self.blocks = nn.Sequential(*[TransformerBlock(embed_dim) for _ in range(depth)])
+        self.norm = nn.LayerNorm(embed_dim)
+
+    def forward(self, x):
+        x = self.patch_embed(x)
+        x = self.blocks(x)
+        x = self.norm(x)
+        return x
