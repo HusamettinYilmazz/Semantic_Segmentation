@@ -24,5 +24,5 @@ Read the foundational and milestone papers, implement their architectures, and d
 |**Transformer based Backbones Era** |||||
 | SETR | 2021 | Transformer in semantc segmentation | [modeling/setr/](modeling/setr/) | <span style="color:green">DONE</span> | 
 | SegFormer | 2021 | Hierarchical transformer | [modeling/segformer/](modeling/segformer/) | <span style="color:green">DONE</span> |
-| SwinTransformer | - | - | - | - |
+| SwinTransformer | 2021 | - | - | - |
 | SAM | - | - | - | - |
