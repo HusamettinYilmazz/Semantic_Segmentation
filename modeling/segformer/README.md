@@ -37,3 +37,14 @@ scores = Q@K.T = [N, C] X [C, N/r] = [N, N/r]
 
 then scores@V = [N, N/r] X [N/r, C] = [N, c]
 
+
+### Mix-FNN
+Positional encoding is an important component of standard transformer, the classical transformer in **attention is all you need paper** is encoding 1d sequential words but the image structure is different than text, This has led to a research direction focused on designing effective ways to encode positional information for image patches. anyway the SegFormer removed explicit postional encoding and instead introduces **Mix-FFN**, arguing that no need for explicit encoding because conv operation already provides sufficient spatial inductive bias. 
+
+The Mix-FFN is defined as:
+
+$$
+x_{\text{out}} = \mathrm{MLP}\big(\mathrm{GELU}(\mathrm{Conv}_{3\times3}(\mathrm{MLP}(x_{\text{in}})))\big) + x_{\text{in}}
+$$
+
+
