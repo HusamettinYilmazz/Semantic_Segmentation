@@ -47,4 +47,11 @@ $$
 x_{\text{out}} = \mathrm{MLP}\big(\mathrm{GELU}(\mathrm{Conv}_{3\times3}(\mathrm{MLP}(x_{\text{in}})))\big) + x_{\text{in}}
 $$
 
+## Decoder
+there is no art in the decoder it is lightweight MLP based head.
 
+- it takes multi-scale features from the encoder
+- Projects each feature map to a unified embedding dimension
+- Upsamples all features to the same spatial resolution
+- Concatenates them
+- Applies a final linear projection to produce segmentation logits
